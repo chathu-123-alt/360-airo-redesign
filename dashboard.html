@@ -343,9 +343,9 @@
     </ul>
 
     <div class="user-profile">
-      <div class="avatar">CT</div>
+      <div class="avatar" id="sidebar-avatar">CT</div>
       <div class="user-info">
-        <span class="name">Chathurya T.</span>
+        <span class="name" id="sidebar-name">Chathurya T.</span>
         <span class="plan">Pro Plan</span>
       </div>
     </div>
@@ -725,11 +725,11 @@
           <div style="display:flex; gap:24px;">
             <div style="flex:1;">
               <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px; font-weight:500;">First Name</label>
-              <input type="text" value="Chathurya" style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; font-size:14px; outline:none; transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-1)'" onblur="this.style.borderColor='var(--panel-border)'">
+              <input type="text" id="settings-fname" value="Chathurya" style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; font-size:14px; outline:none; transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-1)'" onblur="this.style.borderColor='var(--panel-border)'">
             </div>
             <div style="flex:1;">
               <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px; font-weight:500;">Last Name</label>
-              <input type="text" value="T." style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; font-size:14px; outline:none; transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-1)'" onblur="this.style.borderColor='var(--panel-border)'">
+              <input type="text" id="settings-lname" value="T." style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; font-size:14px; outline:none; transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-1)'" onblur="this.style.borderColor='var(--panel-border)'">
             </div>
           </div>
           
@@ -752,7 +752,7 @@
           
           <div style="padding-top:24px; border-top:1px solid var(--panel-border); display:flex; justify-content:flex-end; gap:12px;">
             <button class="action-btn">Cancel</button>
-            <button class="action-btn primary">Save Changes</button>
+            <button class="action-btn primary" onclick="updateProfile()">Save Changes</button>
           </div>
           
         </div>
@@ -875,6 +875,24 @@
     // Reset input and close modal
     nameInput.value = '';
     closeModal('modal-campaign');
+  }
+
+  function updateProfile() {
+    const fname = document.getElementById('settings-fname').value.trim();
+    const lname = document.getElementById('settings-lname').value.trim();
+    
+    if (!fname) {
+      alert("First name is required.");
+      return;
+    }
+
+    const fullName = lname ? `${fname} ${lname}` : fname;
+    const initial = (fname.charAt(0) + (lname ? lname.charAt(0) : '')).toUpperCase();
+    
+    document.getElementById('sidebar-name').innerText = fullName;
+    document.getElementById('sidebar-avatar').innerText = initial;
+    
+    alert('Profile updated successfully!');
   }
 
   function switchTab(tabId) {

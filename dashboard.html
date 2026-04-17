@@ -897,8 +897,28 @@
     document.getElementById('sidebar-name').innerText = fullName;
     document.getElementById('sidebar-avatar').innerText = initial;
     
+    // Save to localStorage so it persists
+    localStorage.setItem('airo_fname', fname);
+    localStorage.setItem('airo_lname', lname);
+    
     alert('Profile updated successfully!');
   }
+
+  // Load saved profile on startup
+  document.addEventListener("DOMContentLoaded", () => {
+    const savedFname = localStorage.getItem('airo_fname');
+    const savedLname = localStorage.getItem('airo_lname');
+    if (savedFname) {
+      document.getElementById('settings-fname').value = savedFname;
+      if (savedLname !== null) document.getElementById('settings-lname').value = savedLname;
+
+      const fullName = savedLname ? `${savedFname} ${savedLname}` : savedFname;
+      const initial = (savedFname.charAt(0) + (savedLname ? savedLname.charAt(0) : '')).toUpperCase();
+      
+      document.getElementById('sidebar-name').innerText = fullName;
+      document.getElementById('sidebar-avatar').innerText = initial;
+    }
+  });
 
   function switchTab(tabId) {
     // Hide all sections

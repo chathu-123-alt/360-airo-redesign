@@ -380,7 +380,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path></svg>
           </div>
         </div>
-        <div class="stat-value">12,450</div>
+        <div class="stat-value" id="global-sent">12,450</div>
         <div class="stat-trend trend-up">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
           +12.5% from last month
@@ -394,7 +394,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </div>
         </div>
-        <div class="stat-value">48.2%</div>
+        <div class="stat-value" id="global-open">48.2%</div>
         <div class="stat-trend trend-up">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
           +4.1% from last month
@@ -408,7 +408,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
           </div>
         </div>
-        <div class="stat-value">12.4%</div>
+        <div class="stat-value" id="global-reply">12.4%</div>
         <div class="stat-trend trend-down">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline><polyline points="16 17 22 17 22 11"></polyline></svg>
           -0.8% from last month
@@ -422,7 +422,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
           </div>
         </div>
-        <div class="stat-value">34</div>
+        <div class="stat-value" id="global-meetings">34</div>
         <div class="stat-trend trend-up">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
           +8 since yesterday
@@ -898,6 +898,29 @@
       <td><button class="action-btn" style="padding:6px 12px; font-size:12px;">Manage</button></td>
     `;
     if (allCampaignsBody) allCampaignsBody.prepend(tr2);
+
+    // Update global metrics
+    const globalSentEl = document.getElementById('global-sent');
+    const globalMeetingsEl = document.getElementById('global-meetings');
+    const globalOpenEl = document.getElementById('global-open');
+    const globalReplyEl = document.getElementById('global-reply');
+    
+    if (globalSentEl && globalMeetingsEl && globalOpenEl && globalReplyEl) {
+      const currentSent = parseInt(globalSentEl.innerText.replace(/,/g, '')) || 0;
+      const currentMeetings = parseInt(globalMeetingsEl.innerText) || 0;
+      const currentOpen = parseFloat(globalOpenEl.innerText.replace('%', '')) || 0;
+      const currentReply = parseFloat(globalReplyEl.innerText.replace('%', '')) || 0;
+
+      const newMeetings = Math.floor(Math.random() * 3); // 0 to 2 new meetings
+      
+      const newOpen = (currentOpen + (Math.random() * 2 - 1)).toFixed(1);
+      const newReply = (currentReply + (Math.random() * 1 - 0.5)).toFixed(1);
+
+      globalSentEl.innerText = (currentSent + randomSent).toLocaleString();
+      globalMeetingsEl.innerText = (currentMeetings + newMeetings).toString();
+      globalOpenEl.innerText = `${newOpen}%`;
+      globalReplyEl.innerText = `${newReply}%`;
+    }
 
     // Reset input and close modal
     nameInput.value = '';

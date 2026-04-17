@@ -845,6 +845,11 @@
     const dashboardBody = document.getElementById('dashboard-campaigns-body');
     const allCampaignsBody = document.getElementById('all-campaigns-body');
 
+    // Generate random mock stats
+    const randomSent = Math.floor(Math.random() * 2000) + 50;
+    const randomOpened = Math.floor(Math.random() * 60) + 15;
+    const randomReplied = Math.floor(Math.random() * 20) + 2;
+
     // Create Dashboard Row
     const tr1 = document.createElement('tr');
     tr1.innerHTML = `
@@ -853,7 +858,7 @@
         <span class="campaign-meta">Created just now</span>
       </td>
       <td><span class="status-badge status-active">Active</span></td>
-      <td>0</td>
+      <td>${randomSent.toLocaleString()}</td>
     `;
     if (dashboardBody) dashboardBody.prepend(tr1);
 
@@ -865,9 +870,9 @@
         <span class="campaign-meta">Created just now</span>
       </td>
       <td><span class="status-badge status-active">Active</span></td>
-      <td>0</td>
-      <td><span style="color:#4ade80;">0%</span></td>
-      <td><span style="color:var(--accent-1);">0%</span></td>
+      <td>${randomSent.toLocaleString()}</td>
+      <td><span style="color:#4ade80;">${randomOpened}%</span></td>
+      <td><span style="color:var(--accent-1);">${randomReplied}%</span></td>
       <td><button class="action-btn" style="padding:6px 12px; font-size:12px;">Manage</button></td>
     `;
     if (allCampaignsBody) allCampaignsBody.prepend(tr2);

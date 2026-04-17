@@ -102,7 +102,11 @@
       localStorage.setItem('airo_login_email', email);
       
       // Basic extraction of name from email logic (e.g. name@company.com)
-      if (!localStorage.getItem('airo_fname') || localStorage.getItem('airo_fname') === 'Chathurya') {
+      if (localStorage.getItem('from_signup') === 'true') {
+        // Keep the explicitly typed name from signup and clear the flag
+        localStorage.removeItem('from_signup');
+      } else {
+        // Fresh login: dynamically override the name based on the new email
         const namePart = email.split('@')[0].split('.')[0];
         const capitalized = namePart.charAt(0).toUpperCase() + namePart.slice(1);
         localStorage.setItem('airo_fname', capitalized);

@@ -116,6 +116,9 @@
     if (fname) localStorage.setItem('airo_fname', fname);
     if (lname) localStorage.setItem('airo_lname', lname);
     if (email) localStorage.setItem('airo_login_email', email);
+    
+    // Set a flag so Login knows we just signed up
+    localStorage.setItem('from_signup', 'true');
 
     // Simulate signup then redirect to login page
     window.location.href = 'index.html';

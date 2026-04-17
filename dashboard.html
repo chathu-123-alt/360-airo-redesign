@@ -953,6 +953,13 @@
   document.addEventListener("DOMContentLoaded", () => {
     const savedFname = localStorage.getItem('airo_fname');
     const savedLname = localStorage.getItem('airo_lname');
+    const savedEmail = localStorage.getItem('airo_login_email');
+
+    if (savedEmail) {
+      const emailField = document.querySelector('input[type="email"]');
+      if (emailField) emailField.value = savedEmail;
+    }
+
     if (savedFname) {
       document.getElementById('settings-fname').value = savedFname;
       if (savedLname !== null) document.getElementById('settings-lname').value = savedLname;

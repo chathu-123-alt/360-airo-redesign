@@ -62,7 +62,7 @@
           <label>Work Email</label>
           <div class="input-icon-wrap">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            <input type="email" placeholder="name@company.com" required>
+            <input type="email" id="login-email" placeholder="name@company.com" required>
           </div>
         </div>
 
@@ -96,6 +96,19 @@
 
   function handleDemoLogin(e) {
     e.preventDefault();
+    const emailInput = document.getElementById("login-email");
+    if (emailInput && emailInput.value) {
+      const email = emailInput.value.trim();
+      localStorage.setItem('airo_login_email', email);
+      
+      // Basic extraction of name from email logic (e.g. name@company.com)
+      if (!localStorage.getItem('airo_fname') || localStorage.getItem('airo_fname') === 'Chathurya') {
+        const namePart = email.split('@')[0].split('.')[0];
+        const capitalized = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        localStorage.setItem('airo_fname', capitalized);
+        localStorage.setItem('airo_lname', ''); 
+      }
+    }
     // Simulate login then redirect to dashboard
     window.location.href = 'dashboard.html';
   }

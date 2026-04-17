@@ -360,7 +360,7 @@
         <p>Here's what's happening with your outreach campaigns today.</p>
       </div>
       <div class="header-actions">
-        <button class="action-btn">
+        <button class="action-btn" onclick="openModal('modal-support')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
           Support
         </button>
@@ -825,6 +825,28 @@
   </div>
 </div>
 
+<!-- Support Modal -->
+<div id="modal-support" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="modal-title">Contact Support</span>
+      <button class="close-btn" onclick="closeModal('modal-support')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div>
+        <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px;">How can we help you?</label>
+        <textarea id="support-message" rows="4" placeholder="Describe your issue..." style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; outline:none; font-family:inherit; resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+        <button class="action-btn" onclick="closeModal('modal-support')">Cancel</button>
+        <button class="action-btn primary" onclick="sendSupportMessage()">Send Message</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   function openModal(modalId) {
     document.getElementById(modalId).classList.add('active');
@@ -919,6 +941,17 @@
       document.getElementById('sidebar-avatar').innerText = initial;
     }
   });
+
+  function sendSupportMessage() {
+    const msg = document.getElementById('support-message').value.trim();
+    if (!msg) {
+      alert('Please enter a message to support.');
+      return;
+    }
+    alert('Thank you! Your message has been sent to our support team.');
+    document.getElementById('support-message').value = '';
+    closeModal('modal-support');
+  }
 
   function switchTab(tabId) {
     // Hide all sections

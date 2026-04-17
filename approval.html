@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>360 AIRO - Approval Pending</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Specific styles for Approval page right pane */
+    .approval-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .status-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(234, 179, 8, 0.1);
+      border: 2px solid rgba(234, 179, 8, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #eab308;
+      margin-bottom: 30px;
+      box-shadow: 0 0 30px rgba(234, 179, 8, 0.2);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(234, 179, 8, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+    }
+
+    .status-icon svg {
+      width: 40px; height: 40px;
+    }
+
+    .approval-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .approval-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 350px;
+      margin-bottom: 40px;
+    }
+
+    .info-card {
+      background: var(--input-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .info-row:last-child { margin-bottom: 0; }
+    
+    .info-label { color: var(--text-tertiary); }
+    .info-value { color: var(--text-primary); font-weight: 500; }
+    
+    .back-btn {
+      margin-top: 30px;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--panel-border);
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .back-btn:hover {
+      background: var(--panel-border);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-mesh">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="app-container">
+  
+  <!-- Left Side: Product Branding -->
+  <div class="hero-section">
+    <div class="brand" style="top: 40px; left: 60px;">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <span>360 AIRO</span>
+    </div>
+
+    <div class="hero-content">
+      <h1>We are reviewing<br><span class="text-gradient">your application.</span></h1>
+      <p>To ensure high compliance and deliverability for our network, we manually review every account application.</p>
+    </div>
+  </div>
+
+  <!-- Right Side: Approval Pending State -->
+  <div class="auth-section">
+    <div class="auth-wrapper approval-container">
+      
+      <div class="status-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+
+      <h2 class="approval-title">Approval Pending</h2>
+      <p class="approval-desc">We've received your application. Our team will review your account and grant access within 24-48 hours.</p>
+
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Status:</span>
+          <span class="info-value" style="color: #eab308; display:flex; align-items:center; gap:6px;">
+            <span style="width:8px; height:8px; background:#eab308; border-radius:50%; display:inline-block;"></span> Pending Review
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Estimated Time:</span>
+          <span class="info-value">Under 48 hours</span>
+        </div>
+        <div class="info-row" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--panel-border);">
+          <span class="info-label" style="font-size:12px; width:100%; text-align:center;">You will receive an email once approved.</span>
+        </div>
+      </div>
+
+      <button class="back-btn" onclick="window.location.href='index.html'">Back to Login</button>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

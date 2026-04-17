@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>360 AIRO - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Dashboard Specific Styles */
+    body { overflow: auto; padding: 0; display: block; }
+    
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      position: relative;
+    }
+
+    /* Keep the animated background but dim it for the dashboard */
+    .dashboard-layout .bg-mesh { opacity: 0.3; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--panel-border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      padding: 0 12px;
+    }
+    .sidebar-brand .brand-icon { width: 32px; height: 32px; }
+    .sidebar-brand span { font-weight: 700; font-size: 18px; color: var(--text-primary); }
+
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 15px;
+      transition: var(--transition);
+    }
+
+    .nav-item a:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active a {
+      background: linear-gradient(to right, rgba(99, 102, 241, 0.1), transparent);
+      color: var(--accent-1);
+      border-left: 3px solid var(--accent-1);
+    }
+
+    .nav-item svg { width: 20px; height: 20px; }
+
+    /* Profile Section at bottom of sidebar */
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 12px;
+      border-top: 1px solid var(--panel-border);
+      margin-top: 20px;
+    }
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 600; font-size: 16px;
+    }
+    .user-info .name { font-size: 14px; font-weight: 600; color: var(--text-primary); display:block;}
+    .user-info .plan { font-size: 12px; color: var(--text-tertiary); }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .page-title h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .page-title p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .action-btn {
+      padding: 10px 20px;
+      background: var(--input-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text-primary);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex; align-items: center; gap:8px;
+    }
+    
+    .action-btn.primary {
+      background: var(--accent-1);
+      border-color: var(--accent-1);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+    .action-btn.primary:hover { background: #4f46e5; transform: translateY(-1px); }
+    .action-btn:not(.primary):hover { background: rgba(255,255,255,0.08); }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: rgba(10, 10, 15, 0.4);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+    }
+    .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.15); }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .stat-title { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+    .stat-icon { 
+      width: 32px; height: 32px; 
+      border-radius: 8px; 
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-blue { background: rgba(99, 102, 241, 0.1); color: var(--accent-1); }
+    .icon-green { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+    .icon-purple { background: rgba(168, 85, 247, 0.1); color: var(--accent-2); }
+    .icon-orange { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+
+    .stat-value { font-size: 32px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    
+    .stat-trend { font-size: 13px; display: flex; align-items: center; gap: 4px; }
+    .trend-up { color: #22c55e; }
+    .trend-down { color: #ef4444; }
+
+    /* Main Chart and Tables Section */
+    .dashboard-two-col {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+
+    .panel {
+      background: rgba(10, 10, 15, 0.4);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .panel-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+    }
+    .panel-title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+
+    /* Mock Chart */
+    .mock-chart-area {
+      height: 250px;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      padding-top: 20px;
+      border-bottom: 1px dashed var(--panel-border);
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: linear-gradient(to top, var(--accent-1), rgba(99,102,241,0.2));
+      border-radius: 4px 4px 0 0;
+      min-height: 20px;
+      transition: var(--transition);
+      position: relative;
+    }
+    .chart-bar:hover { background: var(--accent-1); cursor: pointer; }
+    .chart-bar::after {
+      content: '';
+      position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
+      font-size: 11px; color: var(--text-tertiary);
+    }
+    .bar-1 { height: 40%; }
+    .bar-2 { height: 60%; }
+    .bar-3 { height: 30%; }
+    .bar-4 { height: 80%; }
+    .bar-5 { height: 50%; }
+    .bar-6 { height: 95%; background: linear-gradient(to top, var(--accent-2), rgba(168,85,247,0.2)); }
+    .bar-7 { height: 75%; }
+
+    /* Table */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { 
+      text-align: left; padding: 12px; font-size: 12px; font-weight: 500; 
+      color: var(--text-tertiary); border-bottom: 1px solid var(--panel-border);
+    }
+    .data-table td { 
+      padding: 16px 12px; font-size: 14px; color: var(--text-primary); 
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    
+    .status-badge {
+      padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    }
+    .status-active { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
+    .status-paused { background: rgba(234, 179, 8, 0.1); color: #facc15; }
+
+    .campaign-name { font-weight: 500; color: var(--text-primary); display:block; margin-bottom:4px; }
+    .campaign-meta { font-size: 12px; color: var(--text-tertiary); }
+
+    /* Tab Sections */
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: #111116; border: 1px solid var(--panel-border);
+      border-radius: 16px; padding: 32px; width: 100%; max-width: 500px;
+      position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .modal-title { font-size: 20px; font-weight: 600; color: var(--text-primary); }
+    .close-btn { background: transparent; border: none; color: var(--text-tertiary); cursor: pointer; padding: 4px; display:flex; align-items:center; }
+    .close-btn:hover { color: var(--text-primary); }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+  
+  <!-- Animated Background Layer -->
+  <div class="bg-mesh">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <span>360 AIRO</span>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item active" id="nav-dashboard">
+        <a href="#" onclick="switchTab('dashboard'); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item" id="nav-campaigns">
+        <a href="#" onclick="switchTab('campaigns'); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          Campaigns
+        </a>
+      </li>
+      <li class="nav-item" id="nav-contacts">
+        <a href="#" onclick="switchTab('contacts'); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Contacts
+        </a>
+      </li>
+      <li class="nav-item" id="nav-analytics">
+        <a href="#" onclick="switchTab('analytics'); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Analytics
+        </a>
+      </li>
+      <li class="nav-item" id="nav-settings" style="margin-top:auto;">
+        <a href="#" onclick="switchTab('settings'); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </a>
+      </li>
+    </ul>
+
+    <div class="user-profile">
+      <div class="avatar">CT</div>
+      <div class="user-info">
+        <span class="name">Chathurya T.</span>
+        <span class="plan">Pro Plan</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <div id="section-dashboard" class="tab-section active">
+      <header class="top-bar">
+      <div class="page-title">
+        <h1>Dashboard Overview</h1>
+        <p>Here's what's happening with your outreach campaigns today.</p>
+      </div>
+      <div class="header-actions">
+        <button class="action-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Support
+        </button>
+        <button class="action-btn primary" onclick="openModal('modal-campaign')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          New Campaign
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Emails Sent</span>
+          <div class="stat-icon icon-blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path></svg>
+          </div>
+        </div>
+        <div class="stat-value">12,450</div>
+        <div class="stat-trend trend-up">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+          +12.5% from last month
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Open Rate</span>
+          <div class="stat-icon icon-orange">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </div>
+        </div>
+        <div class="stat-value">48.2%</div>
+        <div class="stat-trend trend-up">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+          +4.1% from last month
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Reply Rate</span>
+          <div class="stat-icon icon-green">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          </div>
+        </div>
+        <div class="stat-value">12.4%</div>
+        <div class="stat-trend trend-down">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline><polyline points="16 17 22 17 22 11"></polyline></svg>
+          -0.8% from last month
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Meetings Booked</span>
+          <div class="stat-icon icon-purple">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          </div>
+        </div>
+        <div class="stat-value">34</div>
+        <div class="stat-trend trend-up">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+          +8 since yesterday
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts and Tables -->
+    <div class="dashboard-two-col">
+      
+      <!-- Performance Chart mock -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Campaign Performance (Responses)</span>
+          <button class="action-btn" style="padding: 4px 10px; font-size:12px;">Last 7 Days</button>
+        </div>
+        <div class="mock-chart-area">
+          <div class="chart-bar bar-1"></div>
+          <div class="chart-bar bar-2"></div>
+          <div class="chart-bar bar-3"></div>
+          <div class="chart-bar bar-4"></div>
+          <div class="chart-bar bar-5"></div>
+          <div class="chart-bar bar-6"></div>
+          <div class="chart-bar bar-7"></div>
+        </div>
+      </div>
+
+      <!-- Recent Campaigns Table -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Active Campaigns</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Campaign Name</th>
+              <th>Status</th>
+              <th>Sent</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-campaigns-body">
+            <tr>
+              <td>
+                <span class="campaign-name">Q3 Enterprise Outreach</span>
+                <span class="campaign-meta">LinkedIn + Email</span>
+              </td>
+              <td><span class="status-badge status-active">Active</span></td>
+              <td>2,450</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="campaign-name">Startup Founders</span>
+                <span class="campaign-meta">Email Only</span>
+              </td>
+              <td><span class="status-badge status-active">Active</span></td>
+              <td>1,200</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="campaign-name">Series A CTOs</span>
+                <span class="campaign-meta">LinkedIn Only</span>
+              </td>
+              <td><span class="status-badge status-paused">Paused</span></td>
+              <td>450</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="campaign-name">Inbound Follow-up</span>
+                <span class="campaign-meta">Multi-channel</span>
+              </td>
+              <td><span class="status-badge status-active">Active</span></td>
+              <td>89</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div> <!-- /dashboard-two-col -->
+    </div> <!-- /section-dashboard -->
+
+    <div id="section-campaigns" class="tab-section">
+      <header class="top-bar">
+        <div class="page-title">
+          <h1>Campaigns</h1>
+          <p>Manage and create your outreach campaigns.</p>
+        </div>
+      </header>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">All Campaigns</span>
+          <div class="header-actions">
+            <input type="text" placeholder="Search campaigns..." style="background:var(--bg-dark); border:1px solid var(--panel-border); color:var(--text-primary); padding:8px 12px; border-radius:6px; font-size:14px; outline:none; width: 250px;">
+            <button class="action-btn primary" style="padding:8px 16px;" onclick="openModal('modal-campaign')">Create Campaign</button>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Campaign Name</th>
+              <th>Status</th>
+              <th>Sent</th>
+              <th>Opened</th>
+              <th>Replied</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="all-campaigns-body">
+            <tr>
+              <td>
+                <span class="campaign-name">Q3 Enterprise Target</span>
+                <span class="campaign-meta">Created 2 days ago</span>
+              </td>
+              <td><span class="status-badge status-active">Active</span></td>
+              <td>2,450</td>
+              <td><span style="color:#4ade80;">48%</span></td>
+              <td><span style="color:var(--accent-1);">12%</span></td>
+              <td><button class="action-btn" style="padding:6px 12px; font-size:12px;">Manage</button></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="campaign-name">Startup Founders List</span>
+                <span class="campaign-meta">Created 1 week ago</span>
+              </td>
+              <td><span class="status-badge status-active">Active</span></td>
+              <td>1,200</td>
+              <td><span style="color:#4ade80;">52%</span></td>
+              <td><span style="color:var(--accent-1);">18%</span></td>
+              <td><button class="action-btn" style="padding:6px 12px; font-size:12px;">Manage</button></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="campaign-name">Series A CTOs</span>
+                <span class="campaign-meta">Paused yesterday</span>
+              </td>
+              <td><span class="status-badge status-paused">Paused</span></td>
+              <td>450</td>
+              <td><span style="color:#facc15;">35%</span></td>
+              <td><span style="color:#facc15;">5%</span></td>
+              <td><button class="action-btn" style="padding:6px 12px; font-size:12px;">Manage</button></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="campaign-name">Inbound Follow-up</span>
+                <span class="campaign-meta">Always On</span>
+              </td>
+              <td><span class="status-badge status-active">Active</span></td>
+              <td>89</td>
+              <td><span style="color:#4ade80;">65%</span></td>
+              <td><span style="color:var(--accent-1);">22%</span></td>
+              <td><button class="action-btn" style="padding:6px 12px; font-size:12px;">Manage</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="section-contacts" class="tab-section">
+      <header class="top-bar">
+        <div class="page-title">
+          <h1>Contacts</h1>
+          <p>View and segment your prospects.</p>
+        </div>
+      </header>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Prospect List</span>
+          <div class="header-actions">
+             <button class="action-btn">Filter</button>
+             <button class="action-btn primary" style="padding:8px 16px;" onclick="openModal('modal-contacts')">Import Contacts</button>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Company</th>
+              <th>Email</th>
+              <th>Tags</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="campaign-name">Olivia Rhye</span></td>
+              <td><span class="campaign-meta">Linear</span></td>
+              <td style="color:var(--text-secondary); font-size:14px;">olivia@linear.app</td>
+              <td><span style="font-size:11px; padding:4px 10px; background:rgba(99,102,241,0.1); color:var(--accent-1); border-radius:12px;">SaaS</span></td>
+              <td><span style="color:#4ade80; font-size:14px;">Connected</span></td>
+            </tr>
+            <tr>
+              <td><span class="campaign-name">Phoenix Baker</span></td>
+              <td><span class="campaign-meta">Vercel</span></td>
+              <td style="color:var(--text-secondary); font-size:14px;">phoenix@vercel.com</td>
+              <td><span style="font-size:11px; padding:4px 10px; background:rgba(34,197,94,0.1); color:#4ade80; border-radius:12px;">Enterprise</span></td>
+              <td><span style="color:var(--text-tertiary); font-size:14px;">In Sequence</span></td>
+            </tr>
+            <tr>
+              <td><span class="campaign-name">Lana Steiner</span></td>
+              <td><span class="campaign-meta">Stripe</span></td>
+              <td style="color:var(--text-secondary); font-size:14px;">lana@stripe.com</td>
+              <td><span style="font-size:11px; padding:4px 10px; background:rgba(168,85,247,0.1); color:var(--accent-2); border-radius:12px;">Fintech</span></td>
+              <td><span style="color:var(--accent-1); font-size:14px;">Replied</span></td>
+            </tr>
+            <tr>
+              <td><span class="campaign-name">Demi Wilkinson</span></td>
+              <td><span class="campaign-meta">Notion</span></td>
+              <td style="color:var(--text-secondary); font-size:14px;">demi@notion.so</td>
+              <td><span style="font-size:11px; padding:4px 10px; background:rgba(249,115,22,0.1); color:#f97316; border-radius:12px;">Product</span></td>
+              <td><span style="color:#ef4444; font-size:14px;">Bounced</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="section-analytics" class="tab-section">
+      <header class="top-bar">
+        <div class="page-title">
+          <h1>Analytics</h1>
+          <p>Deep dive into your performance metrics.</p>
+        </div>
+      </header>
+      <div class="dashboard-two-col">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Conversion Funnel</span>
+            <span style="font-size:12px; color:var(--text-tertiary);">Last 30 days</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="background:rgba(10,10,15,0.6); padding:16px; border-radius:8px; border:1px solid var(--panel-border);">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="font-size:14px; color:var(--text-secondary);">Sent (100%)</span>
+                <span style="font-size:14px; font-weight:600; color:var(--text-primary);">12,450</span>
+              </div>
+              <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;"><div style="height:100%; width:100%; background:var(--text-tertiary);"></div></div>
+            </div>
+            <div style="background:rgba(10,10,15,0.6); padding:16px; border-radius:8px; border:1px solid var(--panel-border); margin-left:5%;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="font-size:14px; color:var(--text-secondary);">Opened (48.2%)</span>
+                <span style="font-size:14px; font-weight:600; color:var(--text-primary);">6,000</span>
+              </div>
+              <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;"><div style="height:100%; width:48%; background:var(--accent-1);"></div></div>
+            </div>
+            <div style="background:rgba(10,10,15,0.6); padding:16px; border-radius:8px; border:1px solid var(--panel-border); margin-left:10%;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="font-size:14px; color:var(--text-secondary);">Replied (12.4%)</span>
+                <span style="font-size:14px; font-weight:600; color:var(--text-primary);">1,543</span>
+              </div>
+              <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;"><div style="height:100%; width:12%; background:var(--accent-2);"></div></div>
+            </div>
+            <div style="background:rgba(10,10,15,0.6); padding:16px; border-radius:8px; border:1px solid var(--panel-border); margin-left:15%;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="font-size:14px; color:var(--text-secondary);">Meetings Booked (2.2%)</span>
+                <span style="font-size:14px; font-weight:600; color:var(--text-primary);">273</span>
+              </div>
+              <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;"><div style="height:100%; width:5%; background:#22c55e;"></div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Deliverability Health</span>
+          </div>
+          <div style="text-align:center; padding:20px 0;">
+            <div style="position:relative; width:160px; height:160px; margin:0 auto; border-radius:50%; background:conic-gradient(#22c55e 0% 98%, #ef4444 98% 100%); display:flex; align-items:center; justify-content:center;">
+              <div style="width:130px; height:130px; background:var(--bg-dark); border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; border: 4px solid rgba(255,255,255,0.05);">
+                <span style="font-size:32px; font-weight:700; color:var(--text-primary);">98%</span>
+                <span style="font-size:12px; color:var(--text-secondary);">Inbox Rate</span>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-around; margin-top:40px; border-top:1px dashed var(--panel-border); padding-top:20px;">
+              <div>
+                <div style="font-size:20px; font-weight:600; color:#ef4444;">0.5%</div>
+                <div style="font-size:12px; color:var(--text-tertiary); margin-top:4px;">Bounce Rate</div>
+              </div>
+              <div>
+                <div style="font-size:20px; font-weight:600; color:#f97316;">0.1%</div>
+                <div style="font-size:12px; color:var(--text-tertiary); margin-top:4px;">Spam Rate</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="section-settings" class="tab-section">
+      <header class="top-bar">
+        <div class="page-title">
+          <h1>Settings</h1>
+          <p>Configure your account and team preferences.</p>
+        </div>
+      </header>
+      <div class="panel" style="max-width:800px;">
+        <div class="panel-header" style="border-bottom: 1px solid var(--panel-border); padding-bottom: 16px; margin-bottom: 24px;">
+          <span class="panel-title">Profile Info</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:24px;">
+          
+          <div style="display:flex; gap:24px;">
+            <div style="flex:1;">
+              <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px; font-weight:500;">First Name</label>
+              <input type="text" value="Chathurya" style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; font-size:14px; outline:none; transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-1)'" onblur="this.style.borderColor='var(--panel-border)'">
+            </div>
+            <div style="flex:1;">
+              <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px; font-weight:500;">Last Name</label>
+              <input type="text" value="T." style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; font-size:14px; outline:none; transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-1)'" onblur="this.style.borderColor='var(--panel-border)'">
+            </div>
+          </div>
+          
+          <div>
+            <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px; font-weight:500;">Email Address</label>
+            <input type="email" value="chathurya@company.com" style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-secondary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; font-size:14px; outline:none;" readonly>
+            <p style="font-size:12px; color:var(--text-tertiary); margin-top:6px;">Contact support to change your email address.</p>
+          </div>
+          
+          <div>
+            <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px; font-weight:500;">Current Plan</label>
+            <div style="background:linear-gradient(to right, rgba(99,102,241,0.05), rgba(168,85,247,0.05)); border:1px solid rgba(99,102,241,0.2); padding:20px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="display:block; color:var(--text-primary); font-weight:600; font-size:16px; margin-bottom:4px;">Pro Plan (Annual)</span>
+                <span style="font-size:13px; color:var(--text-secondary);">10,000 emails/month active limit. Renews Oct 24, 2026.</span>
+              </div>
+              <button class="action-btn primary" style="padding:8px 16px;">Manage Billing</button>
+            </div>
+          </div>
+          
+          <div style="padding-top:24px; border-top:1px solid var(--panel-border); display:flex; justify-content:flex-end; gap:12px;">
+            <button class="action-btn">Cancel</button>
+            <button class="action-btn primary">Save Changes</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Create Campaign Modal -->
+<div id="modal-campaign" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="modal-title">Create New Campaign</span>
+      <button class="close-btn" onclick="closeModal('modal-campaign')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div>
+        <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Campaign Name</label>
+        <input type="text" id="new-campaign-name" placeholder="e.g. Q4 Outreach" style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; outline:none;">
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Target Audience</label>
+        <select id="new-campaign-audience" style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; outline:none; appearance:none;">
+          <option>Select a contact list...</option>
+          <option>Startup Founders</option>
+          <option>Enterprise Tech Leads</option>
+          <option>Fintech CEOs</option>
+        </select>
+      </div>
+      <div>
+        <label style="display:block; font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Sequence Template</label>
+        <select id="new-campaign-template" style="background:var(--input-bg); border:1px solid var(--panel-border); color:var(--text-primary); padding:10px 14px; border-radius:8px; width:100%; box-sizing:border-box; outline:none; appearance:none;">
+          <option>Blank Sequence</option>
+          <option>B2B High Intent</option>
+          <option>Cold Outbound</option>
+        </select>
+      </div>
+      <div style="margin-top:16px; display:flex; justify-content:flex-end; gap:12px;">
+        <button class="action-btn" onclick="closeModal('modal-campaign')">Cancel</button>
+        <button class="action-btn primary" onclick="createNewCampaign()">Create Campaign</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import Contacts Modal -->
+<div id="modal-contacts" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="modal-title">Import Contacts</span>
+      <button class="close-btn" onclick="closeModal('modal-contacts')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; text-align:center;">
+      <div style="border:2px dashed var(--panel-border); border-radius:12px; padding:40px; background:rgba(255,255,255,0.02);">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="2" style="margin-bottom:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <h3 style="font-size:16px; color:var(--text-primary); margin-bottom:8px;">Upload CSV File</h3>
+        <p style="font-size:13px; color:var(--text-secondary);">Drag and drop your file here, or click to browse.</p>
+        <button class="action-btn" style="margin-top:16px;">Select File</button>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+        <button class="action-btn" onclick="closeModal('modal-contacts')">Cancel</button>
+        <button class="action-btn primary" onclick="closeModal('modal-contacts')">Import Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal(modalId) {
+    document.getElementById(modalId).classList.add('active');
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+  }
+
+  function createNewCampaign() {
+    const nameInput = document.getElementById('new-campaign-name');
+    const name = nameInput.value.trim();
+    if (!name) {
+      alert("Please enter a campaign name.");
+      return;
+    }
+
+    const dashboardBody = document.getElementById('dashboard-campaigns-body');
+    const allCampaignsBody = document.getElementById('all-campaigns-body');
+
+    // Create Dashboard Row
+    const tr1 = document.createElement('tr');
+    tr1.innerHTML = `
+      <td>
+        <span class="campaign-name">${name}</span>
+        <span class="campaign-meta">Created just now</span>
+      </td>
+      <td><span class="status-badge status-active">Active</span></td>
+      <td>0</td>
+    `;
+    if (dashboardBody) dashboardBody.prepend(tr1);
+
+    // Create All Campaigns Row
+    const tr2 = document.createElement('tr');
+    tr2.innerHTML = `
+      <td>
+        <span class="campaign-name">${name}</span>
+        <span class="campaign-meta">Created just now</span>
+      </td>
+      <td><span class="status-badge status-active">Active</span></td>
+      <td>0</td>
+      <td><span style="color:#4ade80;">0%</span></td>
+      <td><span style="color:var(--accent-1);">0%</span></td>
+      <td><button class="action-btn" style="padding:6px 12px; font-size:12px;">Manage</button></td>
+    `;
+    if (allCampaignsBody) allCampaignsBody.prepend(tr2);
+
+    // Reset input and close modal
+    nameInput.value = '';
+    closeModal('modal-campaign');
+  }
+
+  function switchTab(tabId) {
+    // Hide all sections
+    const sections = document.querySelectorAll('.tab-section');
+    sections.forEach(section => section.classList.remove('active'));
+    
+    // Show selected section
+    const activeSection = document.getElementById('section-' + tabId);
+    if (activeSection) {
+      activeSection.classList.add('active');
+    }
+    
+    // Update nav links
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+    
+    const activeNavItem = document.getElementById('nav-' + tabId);
+    if (activeNavItem) {
+      activeNavItem.classList.add('active');
+    }
+  }
+</script>
+
+</body>
+</html>
